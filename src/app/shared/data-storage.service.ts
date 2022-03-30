@@ -41,27 +41,31 @@ export class DataStorageService {
     // EL OPERADOR (tale()) PERMITE OBTENER EL NÚMERO DE USUARIOS QUE SE HAN LOGGEADO (EN ESTE CASO 
     // ESPECIFICAMOS QUE QUEREMOS SOLO 1, ES DECIR, EL PRIMERO)
     // LUEGO DE TOMAR 1 SOLO USUARIO, HARÁ "Unsubscribe()" AUTOMÁTICAMENTE
-    return this.authService.userSubject.pipe(take(1)
+    // POR EL MOMENTO ESTE RETURN SE COMENTÓ YA QUE AHORA SE USA EL QUE ESTÁ DENTRO DEL INTERCEPTOR
+    // "auth-interceptor.service.ts"
+    // return this.authService.userSubject.pipe(take(1)
       // "exhaustMap" ESPERARÁ A QUE EL PRIMER OBSERVABLE SE COMPLETE (EN ESTE CASO EL PRIMER OBSERVABLE ES
       // EL DE "this.authService.userSubject.pipe(take(1))" Y LUEGO NOS DEVOLVERÁ UN NUEVO OBSERVABLE
       // CON LOS DATOS DEL PRIMER OBSERVABLE RESUELTO
-      , exhaustMap(user => {
+
+      // POR EL MOMENTO ESTE "exhaustMap" SE COMENTÓ YA QUE AHORA SE USA EL QUE ESTÁ DENTRO DEL INTERCEPTOR
+      // "auth-interceptor.service.ts"
+      // , exhaustMap(user => {
         return this.http.get<Recipe[]>('https://ng-course-recipe-book-ec7f2-default-rtdb.firebaseio.com/recipes.json',
-        {
-          params: new HttpParams().set('auth', user.token)
-        })
-      }), map(recipes => {
-        return recipes.map(recipe => {
-          return {
-            ...recipe,
-            ingredients: recipe.ingredients ? recipe.ingredients : []
-          };
-        });
-      }),
-      tap(recipes => {
-        this.recipesService.setRecipes(recipes);
-      }));
+        ).pipe(
+              map(recipes => {
+              return recipes.map(recipe => {
+                return {
+                  ...recipe,
+                  ingredients: recipe.ingredients ? recipe.ingredients : []
+                };
+              });
+            }),
+            tap(recipes => {
+              this.recipesService.setRecipes(recipes);
+            }));
     
+      // ESTO FUE COMENTADO YA QUE AHORA LO COLOCAMOS PARA QUE FUNCIONE CON EL OPERADOR "exhaustMap()"
       // .pipe(map(recipes => {
       //     return recipes.map(recipe => {
       //       return {
