@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ComponentFactoryResolver, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceholderDirective } from '../shared/placeholder/placeholder.directive';
 import { AuthResponseData, AuthService } from './auth.service';
 
 @Component({
@@ -9,14 +11,23 @@ import { AuthResponseData, AuthService } from './auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.css']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, OnDestroy{
   isLoginMode = true;
   isLoading = false;
   error: string = null;
+  @ViewChild(PlaceholderDirective, {static:false}) alertHost: PlaceholderDirective;
+  private closeSubscription: Subscription;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  // "ComponentFactoryResolver" NOS PERMITE CREAR COMPONENTES DINAMICAMENTE SIN INYECTARLOS EN EL TEMPLATE
+  constructor(private authService: AuthService, private router: Router, private componentFactoryResolver: ComponentFactoryResolver) { }
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy(): void {
+    // if(this.closeSubscription){
+    //   this.closeSubscription.unsubscribe();
+    // }
   }
 
   onSwitchMode(){
@@ -53,11 +64,41 @@ export class AuthComponent implements OnInit {
       },errorMessage => {
         this.isLoading = false;
         this.error = errorMessage;
+        this.showErrorAlert(errorMessage);
         console.log(errorMessage);          
       }
     )
 
     authForm.reset();
+  }
+
+  // DE ESTA MANERA LOGRAMOS REINICIAR LA VARIABLE "error" PARA QUE NO SIGA SALIENDO EN EL TEMPLATE
+  onHandleError(){
+    this.error = null;
+  }
+
+  // DE ESTA MANERA CREAMOS DINAMICAMENTE NUESTRO COMPONENTE "alert"
+  private showErrorAlert(message: string){
+    // EL MÉTODO "resolveComponentFactory()" PIDE EL TIPO DEL COMPONENTE QUE QUEREMOS AGREGAR, EN ESTE
+    // CASO ES "AlertComponent"
+    // ESTA VARIABLE "alertComponentFactory" CONTENDRÁ EL COMPONENTE QUE QUEREMOS CREAR DINÁMICAMENTE
+    const alertComponentFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+
+    // ESTA VARIABLE "hostViewConteinerRef" CONTENDRÁ EL DIRECTIVE QUE CREAMOS Y QUE NOS PERMITE ACCEDER
+    // A UN PUNTO EN ESPECÍFICO DEL TEMPLATE PARA INTERACTUAR
+    const hostViewConteinerRef = this.alertHost.viewContainerRef;
+
+    // EL MÉTODO "clear()" LIMPIA TODAS LAS VISTAS DENTRO DEL CONTENEDOR DEL DIRECTIVE 
+    hostViewConteinerRef.clear();
+
+    // ASÍ SE CREA UN COMPONENTE DE FORMA DINÁMICA
+    const componentRef = hostViewConteinerRef.createComponent(alertComponentFactory);
+
+    componentRef.instance.message = message;
+    this.closeSubscription = componentRef.instance.close.subscribe(()=> {
+      this.closeSubscription.unsubscribe();
+      hostViewConteinerRef.clear();
+    });
   }
 
 }

@@ -101,16 +101,34 @@ export class AuthService {
     if(this.tokenExpirationTimer){
       clearTimeout(this.tokenExpirationTimer);
     }
-    this.tokenExpirationTimer = null;
+    this.tokenExpirationTimer = null;    
   }
 
-  autoLogout(expirationDuration: number){    
+  autoLogout(expirationDuration: number){ 
+    console.log(expirationDuration);
     this.tokenExpirationTimer = setTimeout(
       () => {
         this.logout();
       }
     , expirationDuration);
   }
+
+  // autoLogout(expirationDuration: number){ 
+  //   let expirationDurationDate = new Date(expirationDuration);
+  //   let that = this;
+  //   let currentMilliseconds: Date;
+  //     this.tokenExpirationTimer = setInterval(
+  //         window.onmousemove = function(){            
+  //            currentMilliseconds = new Date();
+  //            currentMilliseconds = new Date(currentMilliseconds.getTime() - expirationDuration);
+  //            if(currentMilliseconds){
+  //              console.log(currentMilliseconds.getMilliseconds());
+  //              that.logout();
+  //            }
+  //         }          
+  //     , 1000);
+  // }
+  
 
   private handleAuthentication(email: string, userId: string, token: string, expiresIn: number){
     const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
