@@ -1,26 +1,30 @@
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+// import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-route/app-route.module';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
 import { AppComponent } from './app.component';
+// import { AuthInterceptorService } from './auth/auth-interceptor.service';
+// import { AuthComponent } from './auth/auth.component';
+// import { AuthModule } from './auth/auth.module';
+import { CoreModule } from './core.module';
 import { HeaderComponent } from './header/header.component';
-import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.component';
-import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
-import { RecipeItemComponent } from './recipes/recipe-list/recipe-item/recipe-item.component';
-import { RecipeListComponent } from './recipes/recipe-list/recipe-list.component';
-import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
-import { RecipeService } from './recipes/recipe.service';
-import { RecipesComponent } from './recipes/recipes.component';
-import { DropdownDirective } from './shared/dropdown.directive';
-import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
-import { ShoppingListComponent } from './shopping-list/shopping-list.component';
-import { AuthComponent } from './auth/auth.component';
-import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
-import { AuthInterceptorService } from './auth/auth-interceptor.service';
-import { AlertComponent } from './shared/alert/alert.component';
-import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
+// import { RecipeDetailComponent } from './recipes/recipe-detail/recipe-detail.component';
+// import { RecipeEditComponent } from './recipes/recipe-edit/recipe-edit.component';
+// import { RecipeItemComponent } from './recipes/recipe-list/recipe-item/recipe-item.component';
+// import { RecipeListComponent } from './recipes/recipe-list/recipe-list.component';
+// import { RecipeStartComponent } from './recipes/recipe-start/recipe-start.component';
+// import { RecipesComponent } from './recipes/recipes.component';
+// import { RecipesModule } from './recipes/recipes.module';
+// import { AlertComponent } from './shared/alert/alert.component';
+// import { DropdownDirective } from './shared/dropdown.directive';
+// import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
+// import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
+import { SharedModule } from './shared/shared.module';
+// import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
+// import { ShoppingListComponent } from './shopping-list/shopping-list.component';
+// import { ShoppingListModule } from './shopping-list/shopping-list.module';
+
 
 
 
@@ -28,29 +32,75 @@ import { PlaceholderDirective } from './shared/placeholder/placeholder.directive
   declarations: [
     AppComponent,
     HeaderComponent,
-    RecipesComponent,
-    RecipeListComponent,
-    RecipeDetailComponent,
-    RecipeItemComponent,
-    ShoppingListComponent,
-    ShoppingEditComponent,
-    DropdownDirective,
-    RecipeStartComponent,
-    RecipeEditComponent,
-    AuthComponent,
-    LoadingSpinnerComponent,
-    AlertComponent,
-    PlaceholderDirective
+
+    // ANTES ESTABAN AQUÍ LOS SIGUIENTES COMPONENTES:
+    // RecipesComponent,
+    // RecipeListComponent,
+    // RecipeDetailComponent,
+    // RecipeItemComponent,
+    // FUERON MOVIDOS AL "recipes.module.ts"
+
+    // FUERON MOVIDOS AL "shopping-list.module.ts"
+    // ShoppingListComponent,
+    // ShoppingEditComponent,
+    
+    // ESTE DIRECTIVE FUE COMENTADO YA QUE SE MOVIÓ SU USO AL "shared.module.ts"
+    // DropdownDirective,
+    
+    // ANTES ESTABAN AQUÍ LOS SIGUIENTES COMPONENTES:
+    // RecipeStartComponent,
+    // RecipeEditComponent,
+    // FUERON MOVIDOS AL "recipes.module.ts"
+
+    // SE COMENTÓ ESTO DEBIDO A QUE AHORA SE MOVIÓ SU USO DENTRO DEL ARCHIVO "auth.module.ts"
+    // AuthComponent,
+
+    // ESTOS COMPONENTES Y DIRECTIVES FUERON COMENTADOS PORQUE SE MOVIÓ SU USO AL "shared.module.ts"
+    // LoadingSpinnerComponent,
+    // AlertComponent,
+    // PlaceholderDirective
   ],
   imports: [
     BrowserModule,
-    FormsModule,
+
+    // ESTO SE COMENTÓ YA QUE EN EL "app.component" O EN ALGUNO DE SUS COMPONENTES NO USAMOS NINGÚN
+    // FORMULARIO
+    // FormsModule,
+
     AppRoutingModule,
-    ReactiveFormsModule,
+
+    // ESTO SE COMENTÓ YA QUE EN EL "app.component" O EN ALGUNO DE SUS COMPONENTES NO USAMOS EL
+    // "ReactiveFormApproach"
+    // ReactiveFormsModule,
+
     // IMPORTANDO "HttpClientModule" PODEMOS HACER REQUEST HTTP EN CUALQUIER PARTE DE NUESTRA APP ANGULAR
-    HttpClientModule
+    HttpClientModule,
+
+    // AQUI AÑADIMOS LOS 2 MODULES QUE HICIMOS NUEVOS
+
+    // ESTOS MODULES HAN SIDO COMENTADO YA QUE SE ESTÁN CARGANDO A TRAVÉS DEL MODULO "app-route.module.ts"
+    // USANDO EL ACERCAMIENTO DE "Lazy Loading"
+    // RecipesModule,
+    // ShoppingListModule,
+
+    // EL "SharedModule" ES EL CREADO EN EL ARCHIVO "shared.module.ts"
+    SharedModule,
+
+    // EL "CoreModule" ES EL CREADO EN EL ARCHIVO "core.module.ts", SE SUPONE QUE DEBE CONTENER
+    // EL MISMO CONTENIDO QUE TENÍA LA PROPIEDAD "providers" DE ESTE ARCHIVO "app.module.ts"
+    CoreModule,
+
+    // EL "AuthModule" ES EL CREADO EN EL ARCHIVO "auth.module.ts", SE SUPONE QUE DEBE CONTENER
+    // ESTE MODULE SE COMENTÓ YA QUE SE ESTÁ USANDO A TRAVÉS DEL MODULE "app-route.module.ts"
+    // USANDO EL ACERCAMIENTO DE "Lazy Loading"
+    // AuthModule
   ],
-  providers: [RecipeService, {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi:true}],
+  providers: [
+    // ESTO SE COMENTÓ YA QUE AHORA SE COMENZARÁ A USAR A TRAVÉS DEL ARCHIVO "core.module.ts"
+    // {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi:true}
+  ],
+  // DEBIDO A QUE USAMOS EL "provideIn: root" DENTRO DE CADA SERVICIO, YA NO ES NECESARIO DECLARARLOS
+  // DENTRO DE LA PROPIEDAD DE "providers", ANTES ESTABA DENTRO EL SERVICIO "RecipeService"
   bootstrap: [AppComponent]
 })
 export class AppModule { }

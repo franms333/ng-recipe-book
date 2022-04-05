@@ -7,10 +7,10 @@
         </div> -->
         <!-- ESTE ES EL COMPONENTE ALERT CREADO USANDO NGIF -->
         <!-- <app-alert [message]="error" *ngIf="error" (close)="onHandleError()"></app-alert> -->
-        
+
         <!-- ESTE ES EL COMPONENTE CREADO USANDO DYNAMIC COMPONENTS -->
         <!-- "appPlaceholder" ES EL DIRECTIVE CREADO EN LA CARPETA "shared/placeholder/placeholder.directive.ts" -->
-        <ng-template appPlaceholder></ng-template>
+        <ng-template appPlaceholder></ng-template> 
         <div ng *ngIf="isLoading" style="text-align: center;">
             <app-loading-spinner></app-loading-spinner>
         </div>
