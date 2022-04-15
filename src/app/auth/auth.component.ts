@@ -4,7 +4,11 @@ import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { AlertComponent } from '../shared/alert/alert.component';
 import { PlaceholderDirective } from '../shared/placeholder/placeholder.directive';
-import { AuthResponseData, AuthService } from './auth.service';
+import { //AuthResponseData, <- FUE COMENTADO YA QUE CON EL USO DE "ngrx" YA NO SE USA ESTA INTERFAZ
+  AuthService } from './auth.service';
+import * as fromApp from '../store/app.reducer';
+import { Store } from '@ngrx/store';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
   selector: 'app-auth',
@@ -17,17 +21,31 @@ export class AuthComponent implements OnInit, OnDestroy{
   error: string = null;
   @ViewChild(PlaceholderDirective, {static:false}) alertHost: PlaceholderDirective;
   private closeSubscription: Subscription;
+  private storeSub: Subscription;
 
   // "ComponentFactoryResolver" NOS PERMITE CREAR COMPONENTES DINAMICAMENTE SIN INYECTARLOS EN EL TEMPLATE
-  constructor(private authService: AuthService, private router: Router, private componentFactoryResolver: ComponentFactoryResolver) { }
+  constructor(private authService: AuthService, 
+              private router: Router, 
+              private componentFactoryResolver: ComponentFactoryResolver,
+              private store: Store<fromApp.AppState>) { }
 
   ngOnInit(): void {
+    this.storeSub = this.store.select('auth').subscribe(authState => {
+      this.isLoading = authState.loading;
+      this.error = authState.authError;
+      if(this.error){
+        this.showErrorAlert(this.error);
+      }
+    })
   }
 
   ngOnDestroy(): void {
-    // if(this.closeSubscription){
-    //   this.closeSubscription.unsubscribe();
-    // }
+    if(this.closeSubscription){
+      this.closeSubscription.unsubscribe();
+    }
+    if(this.storeSub){
+      this.storeSub.unsubscribe();
+    }
   }
 
   onSwitchMode(){
@@ -43,38 +61,60 @@ export class AuthComponent implements OnInit, OnDestroy{
     const password = authForm.value.password;
 
     // DE ESTA MANERA ENCAPSULAMOS 1 SOLO OBSERVABLE Y NO LO REPETIMOS EN AMBOS CASOS DEL IF/ELSE
-    let authObs: Observable<AuthResponseData>;    
+    // SE COMENTÓ POR EL USO DE "ngrx"
+    // let authObs: Observable<AuthResponseData>;    
 
     // AQUÍ MOSTRAMOS EL LOADING SPINNER
-    this.isLoading = true
+    // SE COMENTÓ POR EL USO DE "ngrx"
+    // this.isLoading = true
 
     // ESTE ES EL CASO PARA EL LOGIN
     if(this.isLoginMode){
-      authObs = this.authService.login(email, password);
+      // authObs = this.authService.login(email, password);
+
+      this.store.dispatch(new AuthActions.LoginStart({
+        email: email,
+        password: password
+      }))
+
       // ESTE ES EL CASO PARA EL SIGN UP
     } else {
-      authObs = this.authService.signUp(email, password);
+      // SE COMENTÓ POR EL USO DE "ngrx"
+      // authObs = this.authService.signUp(email, password);
+
+      this.store.dispatch(new AuthActions.SignupStart({
+        email: email,
+        password: password
+      }))
     }    
 
-    authObs.subscribe(
-      resData => {
-        console.log(resData);
-        this.isLoading = false;
-        this.router.navigate(['/recipes']);
-      },errorMessage => {
-        this.isLoading = false;
-        this.error = errorMessage;
-        this.showErrorAlert(errorMessage);
-        console.log(errorMessage);          
-      }
-    )
+    // FUE COMENTADO POR EL USO DE "ngrx" Y "Effects"
+    // authObs.subscribe(
+    //   resData => {
+    //     console.log(resData);
+    //     this.isLoading = false;
+    //     this.router.navigate(['/recipes']);
+    //   },errorMessage => {
+    //     this.isLoading = false;
+    //     this.error = errorMessage;
+    //     this.showErrorAlert(errorMessage);
+    //     console.log(errorMessage);          
+    //   }
+    // )
+
+    this.store.select('auth').subscribe(authState => {
+
+    })
 
     authForm.reset();
   }
 
   // DE ESTA MANERA LOGRAMOS REINICIAR LA VARIABLE "error" PARA QUE NO SIGA SALIENDO EN EL TEMPLATE
   onHandleError(){
-    this.error = null;
+    // SE COMENTÓ PARA USAR ngrx
+    // this.error = null;
+
+    this.store.dispatch(new AuthActions.ClearError());
   }
 
   // DE ESTA MANERA CREAMOS DINAMICAMENTE NUESTRO COMPONENTE "alert"

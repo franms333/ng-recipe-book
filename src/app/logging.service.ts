@@ -7,9 +7,9 @@ import { Injectable } from '@angular/core';
 // 4.- LAZY LOAD COMPONENTS
 
 @Injectable(
-  // {
-  // providedIn: 'root'
-  // }
+  {
+  providedIn: 'root'
+  }
 )
 export class LoggingService {
   lastlog: string;

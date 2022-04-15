@@ -2,7 +2,10 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Recipe } from '../recipe.model';
-import { RecipeService } from '../recipe.service';
+// import { RecipeService } from '../recipe.service';
+import * as fromApp from '../../store/app.reducer';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-recipe-list',
@@ -22,16 +25,29 @@ export class RecipeListComponent implements OnInit, OnDestroy {
   //              "Esto es otro texto de prueba", 
   //              "https://images.immediate.co.uk/production/volatile/sites/30/2020/08/chorizo-mozarella-gnocchi-bake-cropped-9ab73a3.jpg?quality=90&resize=556,505")
   // ];
-  constructor(private recipeService: RecipeService, private router: Router, private route: ActivatedRoute) { }
+  constructor(
+              // private recipeService: RecipeService, 
+              private router: Router, 
+              private route: ActivatedRoute,
+              private store: Store<fromApp.AppState>) { }
 
   ngOnInit(): void {
-    this.subscription = this.recipeService.recipesChanged.subscribe(
-      (recipes: Recipe[])=>{
-        this.recipes = recipes;
+    // ESTO SE COMENTÓ PARA USAR EL ACERCAMIENTO CON "ngrx"
+    // this.subscription = this.recipeService.recipesChanged.subscribe(
+
+    // ESTE ES EL ACERCAMIENTO CON "ngrx"
+    this.subscription = this.store.select('recipes')
+    .pipe(
+      map(recipesState => recipesState.recipes))
+        .subscribe(
+          (recipes: Recipe[])=>{
+            this.recipes = recipes;
+          }
+        )
+
+        // ESTO FUE COMENTADO PORQUE AHORA USAREMOS EL ACERCAMIENTO CON "ngrx"
+        // this.recipes = this.recipeService.getRecipes();
       }
-    )
-    this.recipes = this.recipeService.getRecipes();
-  }
 
   ngOnDestroy(): void {
     this.subscription.unsubscribe();

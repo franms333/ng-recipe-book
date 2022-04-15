@@ -1,5 +1,8 @@
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+// ES UN MODULE DE ANGULAR QUE PERMITE SETEAR UN STORE 
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 // import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-route/app-route.module';
@@ -21,11 +24,22 @@ import { HeaderComponent } from './header/header.component';
 // import { LoadingSpinnerComponent } from './shared/loading-spinner/loading-spinner.component';
 // import { PlaceholderDirective } from './shared/placeholder/placeholder.directive';
 import { SharedModule } from './shared/shared.module';
+
+// import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+// import { authReducer } from './auth/store/auth.reducer';
+import * as fromApp from './store/app.reducer';
+import { AuthEffects } from './auth/store/auth.effects';
+
 // import { ShoppingEditComponent } from './shopping-list/shopping-edit/shopping-edit.component';
 // import { ShoppingListComponent } from './shopping-list/shopping-list.component';
 // import { ShoppingListModule } from './shopping-list/shopping-list.module';
 
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+
+import { environment } from 'src/environments/environment';
+import { RecipesEffect } from './recipes/store/recipe.effects';
 
 
 @NgModule({
@@ -94,6 +108,21 @@ import { SharedModule } from './shared/shared.module';
     // ESTE MODULE SE COMENTÓ YA QUE SE ESTÁ USANDO A TRAVÉS DEL MODULE "app-route.module.ts"
     // USANDO EL ACERCAMIENTO DE "Lazy Loading"
     // AuthModule
+
+    // EL "forRoot" ES USADO ACÁ PARA SETEAR UN JSON CON:
+    // 1.- UN IDENTIFICADOR PARA EL REDUCER A USAR
+    // 2.- EL REDUCER A USAR
+    // EL "StoreModule" FUE COMENTADO DEBIDO A LA CREACIÓN DEL STORE GLOBAL "app.reducer.ts"
+    // StoreModule.forRoot({shoppingList: shoppingListReducer, auth: authReducer})
+
+    // DE ESTA FORMA SETEAMOS NUESTRO STORE GLOBAL
+    StoreModule.forRoot(fromApp.appReducer),
+    EffectsModule.forRoot([AuthEffects, RecipesEffect]),
+
+    // DE ESTA MANERA LE DECIMOS AL "StoreDevtoolsModule" EN EL NAVEGADOR 
+    // QUE SOLO QUEREMOS QUE MUESTRE LOS MENSAJES DE PRODUCCIÓN
+    StoreDevtoolsModule.instrument({logOnly: environment.production}),
+    StoreRouterConnectingModule.forRoot()
   ],
   providers: [
     // ESTO SE COMENTÓ YA QUE AHORA SE COMENZARÁ A USAR A TRAVÉS DEL ARCHIVO "core.module.ts"

@@ -2,7 +2,10 @@ import { Injectable } from "@angular/core";
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpParams, HttpRequest } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { AuthService } from "./auth.service";
-import { exhaustMap, take } from "rxjs/operators";
+import { exhaustMap, map, take } from "rxjs/operators";
+import { Store } from "@ngrx/store";
+import * as fromApp from '../store/app.reducer';
+
 
 @Injectable()
 
@@ -14,13 +17,24 @@ import { exhaustMap, take } from "rxjs/operators";
 // 1.- IMPORTAR LA INTERFAZ "HttpInterceptor"
 export class AuthInterceptorService implements HttpInterceptor{
 
-    constructor(private authService: AuthService){
+    constructor(private authService: AuthService, private store: Store<fromApp.AppState>){
 
     }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        return this.authService.userSubject.pipe(
+
+        // ESTO FUE COMENTADO PARA USAR "ngrx"
+        // return this.authService.userSubject.pipe(
+
+        // ESTA ES LA SOLUCIÓN USANDO "ngrx"
+        return this.store.select('auth').pipe(
             take(1),
+            // ESTE PASO USANDO "map" LO USAMO ÚNICAMENTE PARA EL CASO DE "ngrx" YA QUE AQUÍ
+            // EL "map" NOS RETORNA EL "user" QUE ENTRA POR EL "State" DE "fromApp"
+            map(authState => {
+                return authState.user;
+            }),
+            // SI NO QUEREMOS USAR "ngrx" SOLO HAY QUE COMENTAR LAS LÍNEAS DEL "map"
             exhaustMap(user => {
                 if(!user){
                     return next.handle(req);

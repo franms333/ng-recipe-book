@@ -7,9 +7,9 @@ import {
 import {
   Recipe
 } from '../recipes/recipe.model';
-import {
-  RecipeService
-} from '../recipes/recipe.service';
+// import {
+//   RecipeService
+// } from '../recipes/recipe.service';
 import {
   exhaustMap,
   map,
@@ -19,21 +19,30 @@ import {
 import {
   AuthService
 } from '../auth/auth.service';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../store/app.reducer';
+import * as RecipesActions from '../recipes/store/recipe.actions';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataStorageService {
 
-  constructor(private http: HttpClient, private recipesService: RecipeService, private authService: AuthService) {}
+  constructor(
+              private http: HttpClient, 
+              // private recipesService: RecipeService, 
+              // SE COMENTÓ ESTE SERVICIO YA QUE AHORA USAMOS EL "auth" QUE CREAMOS CON "ngrx"
+              // private authService: AuthService
+              private store: Store<fromApp.AppState>
+              ) {}
 
   storeRecipes() {
-    const recipes = this.recipesService.getRecipes();
+    // const recipes = this.recipesService.getRecipes();
 
-    return this.http.put('https://ng-course-recipe-book-ec7f2-default-rtdb.firebaseio.com/recipes.json',
-      recipes).subscribe(response => {
-      console.log(response);
-    })
+    // return this.http.put('https://ng-course-recipe-book-ec7f2-default-rtdb.firebaseio.com/recipes.json',
+    //   recipes).subscribe(response => {
+    //   console.log(response);
+    // })
   }
 
   fetchRecipes() {
@@ -62,7 +71,10 @@ export class DataStorageService {
               });
             }),
             tap(recipes => {
-              this.recipesService.setRecipes(recipes);
+              // ESTO SE COMENTÓ YA QUE AHORA SE USARÁ CON "ngrx"
+              // this.recipesService.setRecipes(recipes);
+
+              this.store.dispatch(new RecipesActions.SetRecipes(recipes));
             }));
     
       // ESTO FUE COMENTADO YA QUE AHORA LO COLOCAMOS PARA QUE FUNCIONE CON EL OPERADOR "exhaustMap()"
