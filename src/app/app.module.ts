@@ -41,6 +41,10 @@ import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { environment } from 'src/environments/environment';
 import { RecipesEffect } from './recipes/store/recipe.effects';
 
+// TODO ESTO ES PARA EL "ANGULAR ANIMATIONS"
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { trigger, state, style } from '@angular/animations';
+
 
 @NgModule({
   declarations: [
@@ -75,7 +79,7 @@ import { RecipesEffect } from './recipes/store/recipe.effects';
     // PlaceholderDirective
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
 
     // ESTO SE COMENTÓ YA QUE EN EL "app.component" O EN ALGUNO DE SUS COMPONENTES NO USAMOS NINGÚN
     // FORMULARIO
@@ -122,7 +126,10 @@ import { RecipesEffect } from './recipes/store/recipe.effects';
     // DE ESTA MANERA LE DECIMOS AL "StoreDevtoolsModule" EN EL NAVEGADOR 
     // QUE SOLO QUEREMOS QUE MUESTRE LOS MENSAJES DE PRODUCCIÓN
     StoreDevtoolsModule.instrument({logOnly: environment.production}),
-    StoreRouterConnectingModule.forRoot()
+    StoreRouterConnectingModule.forRoot(),
+
+    // ESTO ES PARA LAS ANIMACIONES DE ANGULAR
+    BrowserAnimationsModule
   ],
   providers: [
     // ESTO SE COMENTÓ YA QUE AHORA SE COMENZARÁ A USAR A TRAVÉS DEL ARCHIVO "core.module.ts"
